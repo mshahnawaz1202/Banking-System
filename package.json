@@ -1,0 +1,26 @@
+{
+  "name": "banking-system",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev" :"npx nodemon server.js",
+    "start" : "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mshahnawaz1202/Banking-System.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/mshahnawaz1202/Banking-System/issues"
+  },
+  "homepage": "https://github.com/mshahnawaz1202/Banking-System#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
