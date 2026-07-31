@@ -40,6 +40,8 @@ userSchema.pre("save", async function (next) {
 userSchema.methods.comparePassword = async (password) => {
     return await bcrypt.compare(password,this.password)
 }
+/**----------------------------------------------------------------------------------------------------------------------- */
+const userModel = moongose.model("user",userSchema)
 
-
+module.exports = userModel 
 
