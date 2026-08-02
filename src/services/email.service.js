@@ -85,7 +85,7 @@ Secure • Trusted • Reliable`;
         </p>
 
         <div style="background:#F3F4F6; padding:15px; border-radius:8px; margin:20px 0;">
-            <strong>✔ Registration Status:</strong> Successful
+            <strong> Registration Status:</strong> Successful
         </div>
 
         <p>
