@@ -25,7 +25,7 @@ const userRegisterController = async (req, res) => {
     })
 
     const token  = jwt.sign({userId: user._id},process.env.JWT_SECRET)
-    res.cookie("jwt_token",token)
+    res.cookie("token",token)
     res.status(201).json({
         user : {
             _id: user._id,
@@ -70,7 +70,7 @@ const userLoginController = async (req,res) => {
     }
 
     const token  = jwt.sign({userId: user._id},process.env.JWT_SECRET)
-    res.cookie("jwt_token",token)
+    res.cookie("token",token)
     res.status(200).json({
         user : {
             _id: user._id,
