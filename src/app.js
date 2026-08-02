@@ -25,7 +25,7 @@ app.use(cookieParser())
  * 
  */
 app.use('/api/auth',authRoute)
-app.use('/api/account',authRoute)
+app.use('/api/account',accountRoute)
 
 
 
