@@ -1,5 +1,14 @@
 const mongoose = require("mongoose");
 
+/**
+ * ? For creating a Transaction we need below things
+ * * fromAccount
+ * * toAccount
+ * * status
+ * * amount
+ * * idmepotencyKey
+ */
+
 const transactionSchema = new mongoose.Schema({
 
     fromAccount: {
@@ -30,7 +39,6 @@ const transactionSchema = new mongoose.Schema({
         required: [true, "Amount is required for creating a Transaction"],
         min: [0, "Transaction cannot be negative."]
     },
-
 
 })
 
