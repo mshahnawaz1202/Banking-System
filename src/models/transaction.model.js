@@ -63,3 +63,8 @@ const transactionSchema = new mongoose.Schema({
  * * Step 5: Update Transaction Status to COMPLETED
  */
 
+/**------------------------------------------------------------------------------------------------------------------------ */
+
+const transactionModel = mongoose.model("transaction",transactionSchema)
+
+module.exports = transactionModel
