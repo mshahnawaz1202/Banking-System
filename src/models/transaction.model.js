@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 
 /**
  * ? For creating a Transaction we need below things
- * * fromAccount
- * * toAccount
- * * status
- * * amount
- * * idmepotencyKey
+ * * fromAccount      -> Sender Account (Debit)
+ * * toAccount        -> Receiver Account (Credit)
+ * * status           -> Transfer Amount
+ * * amount           -> PENDING | COMPLETED | FAILED | REVERSED
+ * * idmepotencyKey   -> Unique Key to Prevent Duplicate Requests
  */
 
 const transactionSchema = new mongoose.Schema({
@@ -40,5 +40,23 @@ const transactionSchema = new mongoose.Schema({
         min: [0, "Transaction cannot be negative."]
     },
 
+    idmepotencyKey : {
+        type: String,
+        required: [true,"IdmepotencyKey is required for creating a transaction."]
+    }
+
 })
+
+
+//! ==========================================================
+//! Transaction Flow
+//! ==========================================================
+
+/**
+ * * Step 1: Create a Transaction
+ * * Step 2: Debit amount from Sender (fromAccount)
+ * * Step 3: Credit amount to Receiver (toAccount)
+ * * Step 4: Create a Ledger Entry
+ * * Step 5: Update Transaction Status to COMPLETED
+ */
 
