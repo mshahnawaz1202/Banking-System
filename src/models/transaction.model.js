@@ -42,7 +42,9 @@ const transactionSchema = new mongoose.Schema({
 
     idmepotencyKey: {
         type: String,
-        required: [true, "IdmepotencyKey is required for creating a transaction."]
+        required: [true, "IdmepotencyKey is required for creating a transaction."],
+        index: true,
+        unique: true
     }
 
 }, {
