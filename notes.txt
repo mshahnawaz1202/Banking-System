@@ -1,0 +1,528 @@
+Functionalities : 
+1. Login
+2. Register
+3. When user login, a welcome email will be mailed (using nodemailer)
+  (https://github.com/ankurdotio/Difference-Backend-video/tree/main/026-nodemailer)for guidence
+
+
+When we transfer money, a transaction is created as below : 
+
+Transaction = {
+  1. To - Account,
+  2. From - Account,
+  3. Amount,
+  4. Idempotency-key: (String based and randomly generated and unique key),
+  5. status : pending  
+
+}
+
+
+
+For Trnasaction do four steps : 
+1. Create a transaction with status pending
+2. Amount deducted from A user's account (Debit from A)
+3. Amount added to B user's account (Credited to B)
+4. Do status of transaction from pending to completed
+
+
+====================================================================================================================
+                                LEDGER & TRANSACTION SYSTEM
+====================================================================================================================
+
+Whenever money is transferred from one account to another, the banking system must ensure that:
+
+1. Money is deducted from the sender's account.
+2. Money is added to the receiver's account.
+3. Every transfer is permanently recorded.
+4. Duplicate transfers do not occur.
+5. The system remains consistent even if a failure occurs.
+
+To achieve this, banking systems use two important concepts:
+
+1. Transaction
+2. Ledger
+
+--------------------------------------------------------------------------------------------------------------------
+1. WHAT IS A TRANSACTION?
+--------------------------------------------------------------------------------------------------------------------
+
+A Transaction is a single financial operation that transfers money from one account to another.
+
+A transaction represents the complete process of moving money from the sender to the receiver.
+
+Example
+
+    Account A  --------------------->  Account B
+                     Transfer $100
+
+Sender   : Account A
+Receiver : Account B
+Amount   : $100
+
+Every transfer creates one Transaction record.
+
+--------------------------------------------------------------------------------------------------------------------
+2. TRANSACTION OBJECT
+--------------------------------------------------------------------------------------------------------------------
+
+Whenever a user initiates a money transfer, the system creates a transaction object.
+
+Transaction = {
+
+    To_Account        : Account B,
+
+    From_Account      : Account A,
+
+    Amount            : 100,
+
+    Idempotency_Key   : "XK82KD91JS82LK",
+
+    Status            : "PENDING"
+
+}
+
+Initially, every transaction starts with the status "PENDING".
+
+--------------------------------------------------------------------------------------------------------------------
+3. TRANSACTION FIELDS EXPLANATION
+--------------------------------------------------------------------------------------------------------------------
+
+1. From_Account
+
+   • Represents the sender's account.
+   • Money will be deducted from this account.
+
+   Example
+
+   Account A
+   Balance = $1000
+
+----------------------------------------------------------------------------------------------------
+
+2. To_Account
+
+   • Represents the receiver's account.
+   • Money will be deposited into this account.
+
+   Example
+
+   Account B
+   Balance = $1200
+
+----------------------------------------------------------------------------------------------------
+
+3. Amount
+
+   • Specifies how much money will be transferred.
+
+   Example
+
+   Amount = $100
+
+----------------------------------------------------------------------------------------------------
+
+4. Idempotency Key
+
+   • A randomly generated unique string.
+   • Every transaction has a different key.
+   • Prevents duplicate money transfers.
+
+   Example
+
+   Idempotency Key
+
+   "9df72hd8-82jd-4f11-a871"
+
+   Purpose
+
+   • Prevent duplicate requests.
+   • Prevent double-click transfers.
+   • Safe retry after network timeout.
+
+----------------------------------------------------------------------------------------------------
+
+5. Status
+
+   • Represents the current state of the transaction.
+
+   Common Status Values
+
+   • PENDING
+   • PROCESSING
+   • COMPLETED
+   • FAILED
+   • CANCELLED
+   • REVERSED
+
+--------------------------------------------------------------------------------------------------------------------
+4. WHAT IS A LEDGER?
+--------------------------------------------------------------------------------------------------------------------
+
+A Ledger is the permanent record of every financial transaction.
+
+It stores the complete history of all money movements within the banking system.
+
+Unlike account balances, ledger records are never deleted or modified.
+
+Think of the ledger as the "financial history book" of the bank.
+
+Every transfer,
+Every withdrawal,
+Every deposit,
+Every refund,
+
+is permanently stored in the ledger.
+
+--------------------------------------------------------------------------------------------------------------------
+5. WHY DO WE NEED A LEDGER?
+--------------------------------------------------------------------------------------------------------------------
+
+Without a ledger, we only know the current account balance.
+
+Example
+
+Account A = $900
+
+Account B = $1300
+
+Question:
+
+Where did the $100 go?
+
+Without a ledger, there is no answer.
+
+With a ledger, every transfer has a permanent record.
+
+Benefits of Ledger
+
+• Complete transaction history
+• Easy auditing
+• Fraud detection
+• Regulatory compliance
+• Balance reconstruction
+• Permanent proof of every transaction
+
+--------------------------------------------------------------------------------------------------------------------
+6. LEDGER ENTRY
+--------------------------------------------------------------------------------------------------------------------
+
+Whenever a transaction completes successfully, a new ledger entry is created.
+
+Example
+
+Ledger Entry
+
+Transaction ID : TX1001
+
+From Account   : A
+
+To Account     : B
+
+Amount         : $100
+
+Currency       : USD
+
+Status         : COMPLETED
+
+Timestamp      : 03-Aug-2026 10:38 AM
+
+Reference No   : REF1001
+
+Idempotency Key: XK82KD91JS82LK
+
+Important Points
+
+• Ledger entries are append-only.
+• Existing entries are never modified.
+• Existing entries are never deleted.
+• Corrections are made by creating new entries.
+
+--------------------------------------------------------------------------------------------------------------------
+7. ACCOUNT TABLE VS LEDGER TABLE
+--------------------------------------------------------------------------------------------------------------------
+
+Account Table
+
+Stores
+
+• Current Balance
+• Account Information
+
+Example
+
+Account A
+
+Balance = $900
+
+------------------------------------------------------------
+
+Ledger Table
+
+Stores
+
+• Complete Transaction History
+
+Example
+
+TX001
+
+A → B
+
+$100
+
+-----------------------
+
+TX002
+
+C → A
+
+$500
+
+-----------------------
+
+TX003
+
+A → D
+
+$50
+
+The ledger explains how the current balance was reached.
+
+--------------------------------------------------------------------------------------------------------------------
+8. COMPLETE TRANSACTION PROCESS
+--------------------------------------------------------------------------------------------------------------------
+
+Suppose
+
+Account A Balance = $1000
+
+Account B Balance = $1200
+
+Account A wants to transfer $100 to Account B.
+
+The banking system performs the following steps.
+
+--------------------------------------------------------------------------------------------------------------------
+STEP 1 : CREATE TRANSACTION
+--------------------------------------------------------------------------------------------------------------------
+
+The system creates a transaction record.
+
+Status = PENDING
+
+At this point,
+
+• No money has been transferred.
+• Both balances remain unchanged.
+
+Balances
+
+A = $1000
+
+B = $1200
+
+--------------------------------------------------------------------------------------------------------------------
+STEP 2 : VALIDATE TRANSACTION
+--------------------------------------------------------------------------------------------------------------------
+
+Before transferring money, the system verifies:
+
+• Sender account exists.
+• Receiver account exists.
+• Sender has sufficient balance.
+• Amount is greater than zero.
+• Daily transfer limit is not exceeded.
+• Idempotency key is unique.
+• Accounts are active.
+
+If any validation fails,
+
+Transaction Status = FAILED
+
+No money is transferred.
+
+--------------------------------------------------------------------------------------------------------------------
+STEP 3 : DEBIT ACCOUNT A
+--------------------------------------------------------------------------------------------------------------------
+
+The amount is deducted from the sender.
+
+Before
+
+A = $1000
+
+After
+
+A = $900
+
+Debit means money leaves the sender's account.
+
+Transaction Status
+
+PENDING
+
+--------------------------------------------------------------------------------------------------------------------
+STEP 4 : CREDIT ACCOUNT B
+--------------------------------------------------------------------------------------------------------------------
+
+The amount is added to the receiver.
+
+Before
+
+B = $1200
+
+After
+
+B = $1300
+
+Credit means money enters the receiver's account.
+
+Transaction Status
+
+PENDING
+
+--------------------------------------------------------------------------------------------------------------------
+STEP 5 : CREATE LEDGER ENTRY
+--------------------------------------------------------------------------------------------------------------------
+
+After the money has been transferred successfully,
+
+the system records the transaction permanently in the ledger.
+
+Ledger Entry
+
+TX1001
+
+A → B
+
+$100
+
+Status = COMPLETED
+
+This becomes the permanent proof of the transfer.
+
+--------------------------------------------------------------------------------------------------------------------
+STEP 6 : UPDATE TRANSACTION STATUS
+--------------------------------------------------------------------------------------------------------------------
+
+After
+
+• Debit completed
+• Credit completed
+• Ledger entry created
+
+The transaction status changes from
+
+PENDING
+
+to
+
+COMPLETED
+
+--------------------------------------------------------------------------------------------------------------------
+9. COMPLETE FLOW
+--------------------------------------------------------------------------------------------------------------------
+
+User Clicks "Transfer"
+
+        │
+        ▼
+
+Create Transaction
+
+(Status = PENDING)
+
+        │
+        ▼
+
+Validate Request
+
+        │
+        ▼
+
+Check Idempotency Key
+
+        │
+        ▼
+
+Debit Account A
+
+        │
+        ▼
+
+Credit Account B
+
+        │
+        ▼
+
+Create Ledger Entry
+
+        │
+        ▼
+
+Update Status
+
+PENDING → COMPLETED
+
+        │
+        ▼
+
+Return Success Response
+
+--------------------------------------------------------------------------------------------------------------------
+10. FINAL RESULT
+--------------------------------------------------------------------------------------------------------------------
+
+Account A
+
+Balance
+
+1000 → 900
+
+------------------------------------------------------------
+
+Account B
+
+Balance
+
+1200 → 1300
+
+------------------------------------------------------------
+
+Transaction
+
+Status
+
+COMPLETED
+
+------------------------------------------------------------
+
+Ledger
+
+One permanent record created.
+
+--------------------------------------------------------------------------------------------------------------------
+11. SUMMARY
+--------------------------------------------------------------------------------------------------------------------
+
+1. A Transaction represents a single money transfer.
+
+2. Every transaction begins with the status PENDING.
+
+3. The sender's account is debited.
+
+4. The receiver's account is credited.
+
+5. After a successful transfer, a ledger entry is created.
+
+6. The transaction status changes to COMPLETED.
+
+7. The ledger permanently stores the transaction history.
+
+8. The account table stores only the current balance.
+
+9. The ledger table stores the complete history of money movements.
+
+10. Together, Transaction, Ledger, Database Transactions (ACID), and Idempotency Keys ensure a secure, reliable, and consistent banking system.
+
+====================================================================================================================
