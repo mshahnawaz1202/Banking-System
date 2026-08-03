@@ -6,7 +6,7 @@ const mongoose = require("mongoose");
  * * toAccount        -> Receiver Account (Credit)
  * * status           -> Transfer Amount
  * * amount           -> PENDING | COMPLETED | FAILED | REVERSED
- * * idmepotencyKey   -> Unique Key to Prevent Duplicate Requests
+ * * idempotencyKey   -> Unique Key to Prevent Duplicate Requests
  */
 /**------------------------------------------------------------------------------------------------------------------------ */
 const transactionSchema = new mongoose.Schema({
@@ -40,15 +40,15 @@ const transactionSchema = new mongoose.Schema({
         min: [0, "Transaction cannot be negative."]
     },
 
-    idmepotencyKey: {
+    idempotencyKey: {
         type: String,
-        required: [true, "IdmepotencyKey is required for creating a transaction."],
+        required: [true, "idempotencyKey is required for creating a transaction."],
         index: true,
         unique: true
     }
 
 }, {
-    timestamp: true
+    timestamps: true
 })
 /**------------------------------------------------------------------------------------------------------------------------ */
 //! ==========================================================
