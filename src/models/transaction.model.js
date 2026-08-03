@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+/**------------------------------------------------------------------------------------------------------------------------ */
 /**
  * ? For creating a Transaction we need below things
  * * fromAccount      -> Sender Account (Debit)
@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
  * * amount           -> PENDING | COMPLETED | FAILED | REVERSED
  * * idmepotencyKey   -> Unique Key to Prevent Duplicate Requests
  */
-
+/**------------------------------------------------------------------------------------------------------------------------ */
 const transactionSchema = new mongoose.Schema({
 
     fromAccount: {
@@ -46,8 +46,7 @@ const transactionSchema = new mongoose.Schema({
     }
 
 })
-
-
+/**------------------------------------------------------------------------------------------------------------------------ */
 //! ==========================================================
 //! Transaction Flow
 //! ==========================================================
