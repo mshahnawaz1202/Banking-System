@@ -40,11 +40,13 @@ const transactionSchema = new mongoose.Schema({
         min: [0, "Transaction cannot be negative."]
     },
 
-    idmepotencyKey : {
+    idmepotencyKey: {
         type: String,
-        required: [true,"IdmepotencyKey is required for creating a transaction."]
+        required: [true, "IdmepotencyKey is required for creating a transaction."]
     }
 
+}, {
+    timestamp: true
 })
 /**------------------------------------------------------------------------------------------------------------------------ */
 //! ==========================================================
