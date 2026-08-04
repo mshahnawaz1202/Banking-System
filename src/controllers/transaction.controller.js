@@ -134,6 +134,28 @@ async function createTransaction(req, res) {
         })
     }
 
+    /**
+     * * 4. Derive Sender Balance from Ledger
+    *  - Calculate the current balance using ledger entries.
+    *  - Verify sufficient funds are available.
+     */
+
+    const balance = await fromUserAccount.getBalance()
+
+    if (balance < amount) {
+        return res.status(400).json({
+                message: `Insufficiant Balance!\nCurrent Balance is ${balance} and requested amount is ${amount}`
+            })
+
+    }
+
+    /**
+    * * 5. Create Transaction (PENDING)
+    *    - Create a new transaction record.
+    *    - Initial status = PENDING.
+     */
+
+    
 
 }
 
