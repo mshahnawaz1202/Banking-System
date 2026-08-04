@@ -46,6 +46,7 @@
  * * - Return appropriate error response
  */
 
+const mongoose = require("mongoose");
 const transactionModel = require('../models/transaction.model')
 const ledgerModel = require('../models/ledger.model')
 const accountModel = require('../models/account.model')
@@ -144,8 +145,8 @@ async function createTransaction(req, res) {
 
     if (balance < amount) {
         return res.status(400).json({
-                message: `Insufficiant Balance!\nCurrent Balance is ${balance} and requested amount is ${amount}`
-            })
+            message: `Insufficiant Balance!\nCurrent Balance is ${balance} and requested amount is ${amount}`
+        })
 
     }
 
@@ -155,7 +156,57 @@ async function createTransaction(req, res) {
     *    - Initial status = PENDING.
      */
 
-    
+    const session = await mongoose.startSession()
+    session.startTransaction()
 
+    const transaction = await transactionModel.create({
+        fromAccount,
+        toAccount,
+        amount,
+        idempotencyKey,
+        status: "PENDING",
+    }, { session })
+
+    const debitLedgerEntry = await ledgerModel.create({
+        account: fromAccount,
+        amount: amount,
+        transaction: transaction._id,
+        type: "DEBIT",
+
+    }, { session })
+
+    const creditLedgerEntry = await ledgerModel.create({
+        account: toAccount,
+        amount: amount,
+        transaction: transaction._id,
+        type: "CREDIT",
+
+    }, { session })
+
+    transaction.status = "COMPLETED"
+    await transaction.save({ session })
+
+    await session.commitTransaction()
+    session.endSession()
+
+    /**
+    * * 10. Send Email Notification
+    *    - Notify sender and receiver of the successful transfer.
+     */
+
+    await emailService.sendTransactionEmail(
+        req.user.email,
+        req.user.name,
+        amount,
+        toAccount
+    );
+
+    res.status(201).json({
+        message:"Transaction Completed Successfully!",
+        transaction: transaction
+    })
 }
 
+module.exports = {
+    createTransaction
+}
