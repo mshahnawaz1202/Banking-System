@@ -108,10 +108,151 @@ Secure • Trusted • Reliable`;
 
     await sendEmail(userEmail, subject, text, html);
 };
+const sendTransactionEmail = async (userEmail, name, amount, toAccount) => {
+    const subject = "MS Bank - Transaction Successful";
+
+    const text = `Dear ${name},
+
+Your transaction has been completed successfully.
+
+Transaction Details:
+- Amount: PKR ${amount}
+- Recipient Account: ${toAccount}
+- Status: Successful
+
+Thank you for banking with MS Bank.
+
+Best Regards,
+MS Bank Team`;
+
+    const html = `
+    <div style="font-family: Arial, Helvetica, sans-serif; max-width:600px; margin:auto; padding:30px; border:1px solid #e5e5e5; border-radius:10px; background:#ffffff;">
+
+        <h2 style="color:#16A34A; margin-bottom:20px;">
+            Transaction Successful
+        </h2>
+
+        <p>Dear <strong>${name}</strong>,</p>
+
+        <p>Your transaction has been processed successfully.</p>
+
+        <div style="background:#F3F4F6; padding:20px; border-radius:8px; margin:20px 0;">
+            <table style="width:100%; border-collapse:collapse;">
+                <tr>
+                    <td><strong>Amount</strong></td>
+                    <td style="text-align:right;">PKR ${Number(amount).toLocaleString()}</td>
+                </tr>
+                <tr>
+                    <td><strong>Recipient Account</strong></td>
+                    <td style="text-align:right;">${toAccount}</td>
+                </tr>
+                <tr>
+                    <td><strong>Status</strong></td>
+                    <td style="text-align:right; color:#16A34A;"><strong>Successful</strong></td>
+                </tr>
+            </table>
+        </div>
+
+        <p>
+            If you did not authorize this transaction, please contact our support team immediately.
+        </p>
+
+        <hr style="border:none; border-top:1px solid #ddd; margin:30px 0;">
+
+        <p style="margin:0;"><strong>Best Regards,</strong></p>
+        <p style="margin:5px 0;"><strong>MS Bank Team</strong></p>
+
+        <p style="font-size:12px; color:#666; margin-top:20px;">
+            This is an automated email. Please do not reply to this message.
+        </p>
+
+    </div>`;
+
+    await sendEmail(userEmail, subject, text, html);
+};
+
+const sendTransactionFailureEmail = async (userEmail, name, amount, toAccount, reason) => {
+    const subject = "MS Bank - Transaction Failed";
+
+    const text = `Dear ${name},
+
+We regret to inform you that your transaction could not be completed.
+
+Transaction Details:
+- Amount: PKR ${amount}
+- Recipient Account: ${toAccount}
+- Status: Failed
+- Reason: ${reason}
+
+No funds have been transferred from your account.
+
+Please verify the transaction details and try again. If the issue persists, contact MS Bank Customer Support.
+
+Best Regards,
+MS Bank Team`;
+
+    const html = `
+    <div style="font-family: Arial, Helvetica, sans-serif; max-width:600px; margin:auto; padding:30px; border:1px solid #e5e5e5; border-radius:10px; background:#ffffff;">
+
+        <h2 style="color:#DC2626; margin-bottom:20px;">
+            Transaction Failed
+        </h2>
+
+        <p>Dear <strong>${name}</strong>,</p>
+
+        <p>
+            Unfortunately, your recent transaction could not be processed.
+        </p>
+
+        <div style="background:#FEF2F2; border-left:4px solid #DC2626; padding:20px; border-radius:8px; margin:20px 0;">
+            <table style="width:100%; border-collapse:collapse;">
+                <tr>
+                    <td><strong>Amount</strong></td>
+                    <td style="text-align:right;">PKR ${Number(amount).toLocaleString()}</td>
+                </tr>
+                <tr>
+                    <td><strong>Recipient Account</strong></td>
+                    <td style="text-align:right;">${toAccount}</td>
+                </tr>
+                <tr>
+                    <td><strong>Status</strong></td>
+                    <td style="text-align:right; color:#DC2626;"><strong>Failed</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Reason</strong></td>
+                    <td style="text-align:right;">${reason}</td>
+                </tr>
+            </table>
+        </div>
+
+        <p>
+            No funds have been transferred from your account.
+        </p>
+
+        <p>
+            Please verify the transaction details and try again. If the problem continues,
+            contact MS Bank Customer Support for assistance.
+        </p>
+
+        <hr style="border:none; border-top:1px solid #ddd; margin:30px 0;">
+
+        <p style="margin:0;"><strong>Best Regards,</strong></p>
+        <p style="margin:5px 0;"><strong>MS Bank Team</strong></p>
+
+        <p style="font-size:12px; color:#666; margin-top:20px;">
+            This is an automated email. Please do not reply to this message.
+        </p>
+
+    </div>`;
+
+    await sendEmail(userEmail, subject, text, html);
+};
 
 module.exports = {
-    sendRegisterationEmail
-}
+    sendRegisterationEmail,
+    sendTransactionEmail,
+    sendTransactionFailureEmail
+};
 
 
 
