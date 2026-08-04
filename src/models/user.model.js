@@ -22,6 +22,12 @@ const userSchema = new mongoose.Schema({
         //     'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.'],
         minlength: [6, "Password should be atleast 6 characters"],
         select: false,
+    },
+    systemUser: {
+        type: Boolean,
+        default: false,
+        immutable: true,
+        select:false
     }
 },{
     timestamps : true
