@@ -1,6 +1,7 @@
 const userModel = require('../models/user.model')
 const jwt = require('jsonwebtoken')
 const emailService = require('../services/email.service')
+const tokenBlacklistModel = require('../models/blacklist.model')
 
 
 /**
@@ -24,10 +25,10 @@ const userRegisterController = async (req, res) => {
         password
     })
 
-    const token  = jwt.sign({userId: user._id},process.env.JWT_SECRET)
-    res.cookie("token",token)
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET)
+    res.cookie("token", token)
     res.status(201).json({
-        user : {
+        user: {
             _id: user._id,
             email: user.email,
             name: user.name
@@ -44,8 +45,8 @@ const userRegisterController = async (req, res) => {
  * - User login Controller
  * - /api/auth/login
  */
-const userLoginController = async (req,res) => {
-    const {email, password} = req.body
+const userLoginController = async (req, res) => {
+    const { email, password } = req.body
     /**
      * ? Firstly Find user with email
      * ! if user not exists send a 401 response, email or password id invalid
@@ -54,25 +55,25 @@ const userLoginController = async (req,res) => {
      * * if password is valid then again generate a token
      */
     const user = await userModel.findOne({
-        email:email
+        email: email
     }).select("+password")
-    
-    if(!user){
+
+    if (!user) {
         return res.status(401).json({
-            message : "Email or Password is Invalid!"
+            message: "Email or Password is Invalid!"
         })
     }
     const isValidPassword = await user.comparePassword(password)
-    if(!isValidPassword){
+    if (!isValidPassword) {
         return res.status(401).json({
-            message : "Email or Password is Invalid!"
+            message: "Email or Password is Invalid!"
         })
     }
 
-    const token  = jwt.sign({userId: user._id},process.env.JWT_SECRET)
-    res.cookie("token",token)
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET)
+    res.cookie("token", token)
     res.status(200).json({
-        user : {
+        user: {
             _id: user._id,
             email: user.email,
             name: user.name
@@ -81,10 +82,38 @@ const userLoginController = async (req,res) => {
     })
 }
 
+/**
+ * - User Logout Controller
+ * - /api/auth/logout
+ */
+
+async function userLogoutController(req, res) {
+    const token =
+        req.cookies.token ||
+        req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+        return res.status(400).json({
+            message: "User logged out successfully."
+        });
+    }
+
+    
+
+    await tokenBlacklistModel.create({
+        token: token
+    })
+   res.clearCookie('token');
+   
+    return res.status(200).json({
+        message: "User logged out successfully."
+    });
+}
+
 
 
 
 /** --------------------------------------------------------------------------------------------------------------------------- */
 module.exports = {
-    userRegisterController,userLoginController
+    userRegisterController, userLoginController,userLogoutController
 }
